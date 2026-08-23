@@ -1,6 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import Link from 'next/link';
 import { useAppContext } from '../../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
@@ -12,13 +11,6 @@ import { Clock, CheckCircle2, ShieldCheck, FileText, ChevronRight } from 'lucide
 
 export default function Dashboard() {
   const { user, isLoaded, userComplaints, schemes } = useAppContext();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoaded && !user) {
-      router.push('/login');
-    }
-  }, [user, isLoaded, router]);
 
   if (!isLoaded || !user) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -33,9 +25,16 @@ export default function Dashboard() {
       <main className="flex-grow bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Welcome back, {user.name} 👋</h1>
-            <p className="text-gray-600 mt-1">Here is what's happening with your services and applications.</p>
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome back, {user.name} 👋</h1>
+              <p className="text-gray-600 mt-1">Here is what's happening with your services and applications.</p>
+            </div>
+            <Link href="/complaints">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white border-none shrink-0 shadow-sm">
+                Lodge Complaint
+              </Button>
+            </Link>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -103,7 +102,7 @@ export default function Dashboard() {
                           </div>
                           <div>
                             <h4 className="text-sm font-semibold text-gray-900">{complaint.title}</h4>
-                            <p className="text-xs text-gray-500">{new Date(complaint.date).toLocaleDateString()}</p>
+                            <p className="text-xs text-gray-500">{new Date(complaint.createdAt).toLocaleDateString()}</p>
                           </div>
                         </div>
                         <Badge variant={complaint.status === 'Resolved' ? 'success' : 'warning'}>

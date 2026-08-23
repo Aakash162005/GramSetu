@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
   try {
@@ -10,7 +11,16 @@ export async function POST(request) {
       where: { phone }
     });
 
-    if (!user || user.password !== password) {
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Invalid phone number or password' },
+        { status: 401 }
+      );
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
       return NextResponse.json(
         { error: 'Invalid phone number or password' },
         { status: 401 }

@@ -1,5 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 
 const AppContext = createContext();
 
@@ -7,6 +8,9 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   
+  const pathname = usePathname();
+  const router = useRouter();
+
   // Real Data State
   const [schemes, setSchemes] = useState([]);
   const [notices, setNotices] = useState([]);
@@ -44,6 +48,26 @@ export function AppProvider({ children }) {
     }
     setIsLoaded(true);
   }, []);
+
+  // Global Route Protection
+  useEffect(() => {
+    if (!isLoaded) return;
+    
+    // Handle blocked user
+    if (user && user.isBlocked) {
+      alert("Your account has been blocked by an administrator.");
+      logout();
+      router.push('/login');
+      return;
+    }
+
+    const publicPaths = ['/', '/login', '/signup'];
+    if (!publicPaths.includes(pathname) && !user) {
+      router.push('/login');
+    } else if (pathname.startsWith('/admin') && user && user.role !== 'admin') {
+      router.push('/dashboard');
+    }
+  }, [isLoaded, user, pathname, router]);
 
   const fetchUserComplaints = async (userId) => {
     try {

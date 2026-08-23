@@ -23,8 +23,12 @@ export default function LoginPage() {
     setError('');
 
     try {
-      await login(phone, password);
-      router.push('/dashboard');
+      const result = await login(phone, password);
+      if (result.success) {
+        router.push('/dashboard');
+      } else {
+        setError(result.message || 'Login failed. Please try again.');
+      }
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {

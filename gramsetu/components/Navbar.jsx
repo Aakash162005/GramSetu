@@ -11,12 +11,17 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAppContext();
 
-  const navLinks = [
+  const baseNavLinks = [
     { name: 'Home', href: '/' },
     { name: 'Schemes', href: '/schemes' },
     { name: 'Services', href: '/services' },
     { name: 'Notices', href: '/notices' },
+    { name: 'Village News', href: '/village-news' },
   ];
+
+  const navLinks = user?.role === 'admin' 
+    ? [...baseNavLinks, { name: 'Admin Panel', href: '/admin' }]
+    : baseNavLinks;
 
   const isActive = (path) => pathname === path;
 
@@ -60,10 +65,12 @@ export default function Navbar() {
                     </div>
                     <span className="text-sm font-medium text-gray-700">{user.name}</span>
                   </div>
-                  <div className="absolute right-0 w-48 mt-1 py-2 bg-white rounded-xl shadow-lg border border-gray-100 hidden group-hover:block transition-all">
-                    <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Dashboard</Link>
-                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</Link>
-                    <button onClick={logout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
+                  <div className="absolute right-0 top-full pt-1 w-48 hidden group-hover:block z-50">
+                    <div className="py-2 bg-white rounded-xl shadow-lg border border-gray-100 shadow-xl">
+                      <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Dashboard</Link>
+                      <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</Link>
+                      <button onClick={logout} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
+                    </div>
                   </div>
                 </div>
               </>

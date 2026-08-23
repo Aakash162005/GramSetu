@@ -7,17 +7,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  phone     String   @unique
-  password  String
-  village   String
-  district  String?
-  state     String?
-  role      String   @default("citizen")
-  createdAt DateTime @default(now())
-  
+  id         String      @id @default(cuid())
+  name       String
+  phone      String      @unique
+  password   String
+  village    String
+  district   String?
+  state      String?
+  role       String      @default("citizen")
+  isBlocked  Boolean     @default(false)
+  createdAt  DateTime    @default(now())
   complaints Complaint[]
+}
+
+model VillageNews {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  category  String   @default("News") // "Work Progress", "Complaint Solution", "News"
+  createdAt DateTime @default(now())
 }
 
 model Complaint {
@@ -27,7 +35,6 @@ model Complaint {
   description String
   status      String   @default("Pending")
   createdAt   DateTime @default(now())
-  
   userId      String
   user        User     @relation(fields: [userId], references: [id])
 }

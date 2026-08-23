@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAppContext } from '../../context/AppContext';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
@@ -24,6 +25,8 @@ export default function SignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const { signup } = useAppContext();
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
@@ -34,13 +37,21 @@ export default function SignupPage() {
     
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // In a real app, this would register the user
-      // For this demo, we'll just redirect to login
-      router.push('/login?registered=true');
-    }, 1500);
+    // Call actual backend API
+    const result = await signup({
+      name: formData.name,
+      phone: formData.phone,
+      password: formData.password,
+      village: formData.village
+    });
+    
+    setIsLoading(false);
+    
+    if (result.success) {
+      router.push('/dashboard');
+    } else {
+      setError(result.message || 'Failed to create account');
+    }
   };
 
   return (
