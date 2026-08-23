@@ -1,47 +1,76 @@
-# GramSetu
+# GramSetu 🌿
 
-Connecting Villages, Empowering Communities. 
+GramSetu is a comprehensive Digital Panchayat platform designed to bridge the gap between village administration (Gram Panchayat) and citizens. It digitizes essential village services, streamlines complaint management, and keeps citizens informed about local news and schemes.
 
-GramSetu is a modern, digital portal designed to bridge the gap between rural citizens and Gram Panchayat services. It provides a unified platform to access government schemes, request village services, lodge complaints, and stay updated with local announcements.
+## 🚀 Key Features
 
-## Features
+### For Citizens
+* **Secure Authentication**: Robust signup and login system using bcrypt password hashing to protect citizen data.
+* **Citizen Dashboard**: A personalized space to track your complaints, view active schemes, and manage your profile.
+* **Lodge Complaints**: Easily submit grievances or requests directly to the panchayat administration.
+* **Village News Feed**: Stay up-to-date with a timeline of daily work progress, complaint resolutions, and general village news.
+* **Schemes & Notices Directory**: Browse through all active government schemes, check eligibility criteria, and read official notices.
 
-- **Dashboard**: A personalized view showing recent activities, pending requests, and eligible schemes.
-- **Government Schemes**: A comprehensive directory of central and state government schemes with search and filter capabilities.
-- **Village Services**: Request essential certificates and administrative services directly through the digital portal.
-- **Grievance Redressal**: Lodge complaints regarding infrastructure, water supply, or other village issues and track their status.
-- **Announcements & Events**: Stay updated with the latest news, notices, and important information from your Gram Panchayat.
-- **Profile Management**: Maintain personal information and track account status.
+### For Administrators
+* **Admin Dashboard**: An exclusive overview metrics panel displaying total citizens, active schemes, and active notices.
+* **User Management**: Easily monitor registered citizens and block/unblock accounts to moderate the platform.
+* **News Publisher**: Post real-time updates directly to the Village News feed, categorizing them visually as "Work Progress", "Complaint Solution", or "News".
 
-## Tech Stack
+## 🛠️ Technology Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **UI Library**: React
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Icons**: [Lucide React](https://lucide.dev/)
+* **Frontend**: Next.js (App Router), React, Tailwind CSS (for modern, responsive styling), Lucide React (for icons)
+* **Backend**: Next.js API Routes
+* **Database**: PostgreSQL
+* **ORM**: Prisma Client (using `@prisma/adapter-pg`)
+* **Security**: `bcryptjs` (for password hashing and secure authentication)
 
-## Getting Started
+## 💻 Getting Started
 
-First, install the dependencies:
+### Prerequisites
+Make sure you have Node.js (v20+ recommended) and a PostgreSQL database running.
 
-```bash
-npm install
-```
+### Installation
 
-Then, run the development server:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Aakash162005/GramSetu.git
+   cd GramSetu/gramsetu
+   ```
 
-```bash
-npm run dev
-```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Configure Environment Variables:**
+   Create a `.env` file in the `gramsetu` directory and add your PostgreSQL connection string:
+   ```env
+   DATABASE_URL="postgresql://username:password@localhost:5432/gramsetu"
+   ```
 
-## Project Structure
+4. **Sync the Database Schema:**
+   Push the Prisma schema to your database and generate the client:
+   ```bash
+   npx prisma db push
+   npx prisma generate
+   ```
 
-- `/app`: Contains all Next.js pages and routes.
-- `/components`: Contains reusable UI components (e.g., buttons, cards, modals) and layout components (navbar, footer).
-- `/context`: Contains the React Context used for global state management and mock data provider.
-- `/data`: Contains mock data files used to simulate backend API responses.
+5. **Start the Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Note on Mock Data
-Currently, this project uses mock data to demonstrate its functionality. Authentication is simulated, and any changes made (like submitting a complaint) will only persist within the current session. Use `9876543210` and `password` to log in for demonstration purposes.
+## 👑 Managing Admins
+
+By default, all new signups are regular "citizen" accounts. To access the Admin Panel, you must promote an account using the included script.
+
+1. Sign up on the website with your phone number.
+2. In your terminal, run the following command with your phone number:
+   ```bash
+   node --env-file=.env promoteToAdmin.js <YOUR_PHONE_NUMBER>
+   ```
+3. Refresh your browser, and the **Admin Panel** link will appear in your navigation bar!
+
+---
+*Developed to empower rural digitalization.*
