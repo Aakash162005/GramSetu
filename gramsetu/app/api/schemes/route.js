@@ -15,3 +15,24 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { title, category, description, eligibility, documentsRequired, deadline } = body;
+    const scheme = await prisma.scheme.create({
+      data: {
+        title,
+        category,
+        description,
+        eligibility,
+        documentsRequired,
+        deadline: new Date(deadline)
+      }
+    });
+    return NextResponse.json(scheme, { status: 201 });
+  } catch (error) {
+    console.error('Create scheme error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

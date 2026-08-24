@@ -10,11 +10,28 @@ import Footer from '../../components/Footer';
 
 export default function AdminDashboard() {
   const { user, isLoaded, schemes, notices } = useAppContext();
+  const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [newsTitle, setNewsTitle] = useState('');
   const [newsContent, setNewsContent] = useState('');
   const [newsCategory, setNewsCategory] = useState('News');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // States for Scheme
+  const [schemeTitle, setSchemeTitle] = useState('');
+  const [schemeCategory, setSchemeCategory] = useState('Agriculture');
+  const [schemeDesc, setSchemeDesc] = useState('');
+  const [schemeElig, setSchemeElig] = useState('');
+  const [schemeDocs, setSchemeDocs] = useState('');
+  const [schemeDeadline, setSchemeDeadline] = useState('');
+  const [isSubmittingScheme, setIsSubmittingScheme] = useState(false);
+
+  // States for Notice
+  const [noticeTitle, setNoticeTitle] = useState('');
+  const [noticeType, setNoticeType] = useState('Important');
+  const [noticeContent, setNoticeContent] = useState('');
+  const [noticeDate, setNoticeDate] = useState('');
+  const [isSubmittingNotice, setIsSubmittingNotice] = useState(false);
 
   useEffect(() => {
     if (user?.role === 'admin') {
@@ -62,6 +79,60 @@ export default function AdminDashboard() {
       console.error('Error posting news:', error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handlePostScheme = async (e) => {
+    e.preventDefault();
+    setIsSubmittingScheme(true);
+    try {
+      await fetch('/api/schemes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          title: schemeTitle, 
+          category: schemeCategory, 
+          description: schemeDesc,
+          eligibility: schemeElig,
+          documentsRequired: schemeDocs.split(',').map(d => d.trim()).filter(Boolean),
+          deadline: schemeDeadline
+        })
+      });
+      setSchemeTitle('');
+      setSchemeDesc('');
+      setSchemeElig('');
+      setSchemeDocs('');
+      setSchemeDeadline('');
+      alert('Scheme created successfully!');
+    } catch (error) {
+      console.error('Error creating scheme:', error);
+    } finally {
+      setIsSubmittingScheme(false);
+    }
+  };
+
+  const handlePostNotice = async (e) => {
+    e.preventDefault();
+    setIsSubmittingNotice(true);
+    try {
+      await fetch('/api/notices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          title: noticeTitle, 
+          content: noticeContent, 
+          type: noticeType,
+          date: noticeDate
+        })
+      });
+      setNoticeTitle('');
+      setNoticeContent('');
+      setNoticeDate('');
+      alert('Notice created successfully!');
+    } catch (error) {
+      console.error('Error creating notice:', error);
+    } finally {
+      setIsSubmittingNotice(false);
     }
   };
 
@@ -114,8 +185,17 @@ export default function AdminDashboard() {
             </Card>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          {/* Navigation Tabs */}
+          <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-4">
+            <Button variant={activeTab === 'users' ? 'primary' : 'outline'} onClick={() => setActiveTab('users')}>User Management</Button>
+            <Button variant={activeTab === 'news' ? 'primary' : 'outline'} onClick={() => setActiveTab('news')}>Post News</Button>
+            <Button variant={activeTab === 'scheme' ? 'primary' : 'outline'} onClick={() => setActiveTab('scheme')}>Create Scheme</Button>
+            <Button variant={activeTab === 'notice' ? 'primary' : 'outline'} onClick={() => setActiveTab('notice')}>Create Notice</Button>
+          </div>
+
+          <div className="max-w-3xl">
             {/* User Management Section */}
+            {activeTab === 'users' && (
             <Card>
               <CardHeader>
                 <CardTitle>User Management</CardTitle>
@@ -142,8 +222,10 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+            )}
 
             {/* Post Village News Section */}
+            {activeTab === 'news' && (
             <Card>
               <CardHeader>
                 <CardTitle>Post Village News & Progress</CardTitle>
@@ -183,6 +265,77 @@ export default function AdminDashboard() {
                 </form>
               </CardContent>
             </Card>
+            )}
+
+            {/* Create Scheme Section */}
+            {activeTab === 'scheme' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Create New Scheme</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handlePostScheme} className="space-y-4">
+                  <Input label="Title" value={schemeTitle} onChange={e => setSchemeTitle(e.target.value)} required />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select 
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      value={schemeCategory}
+                      onChange={e => setSchemeCategory(e.target.value)}
+                    >
+                      <option value="Agriculture">Agriculture</option>
+                      <option value="Housing">Housing</option>
+                      <option value="Education">Education</option>
+                      <option value="Health">Health</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg h-20 resize-none" value={schemeDesc} onChange={e => setSchemeDesc(e.target.value)} required></textarea>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Eligibility Criteria</label>
+                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg h-16 resize-none" value={schemeElig} onChange={e => setSchemeElig(e.target.value)} required></textarea>
+                  </div>
+                  <Input label="Required Documents (comma separated)" value={schemeDocs} onChange={e => setSchemeDocs(e.target.value)} required />
+                  <Input type="date" label="Deadline" value={schemeDeadline} onChange={e => setSchemeDeadline(e.target.value)} required />
+                  <Button type="submit" isLoading={isSubmittingScheme} className="w-full">Create Scheme</Button>
+                </form>
+              </CardContent>
+            </Card>
+            )}
+
+            {/* Create Notice Section */}
+            {activeTab === 'notice' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Create New Notice</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handlePostNotice} className="space-y-4">
+                  <Input label="Title" value={noticeTitle} onChange={e => setNoticeTitle(e.target.value)} required />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                    <select 
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                      value={noticeType}
+                      onChange={e => setNoticeType(e.target.value)}
+                    >
+                      <option value="Important">Important</option>
+                      <option value="Update">Update</option>
+                      <option value="Event">Event</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                    <textarea className="w-full px-4 py-2 border border-gray-300 rounded-lg h-32 resize-none" value={noticeContent} onChange={e => setNoticeContent(e.target.value)} required></textarea>
+                  </div>
+                  <Input type="date" label="Date" value={noticeDate} onChange={e => setNoticeDate(e.target.value)} required />
+                  <Button type="submit" isLoading={isSubmittingNotice} className="w-full">Create Notice</Button>
+                </form>
+              </CardContent>
+            </Card>
+            )}
           </div>
 
         </div>

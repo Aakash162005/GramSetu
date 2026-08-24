@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, User, Bell } from 'lucide-react';
@@ -8,8 +8,15 @@ import { Button } from './ui/Button';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAppContext();
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const baseNavLinks = [
     { name: 'Home', href: '/' },
@@ -26,9 +33,9 @@ export default function Navbar() {
   const isActive = (path) => pathname === path;
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <nav className={`sticky top-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-white/80 backdrop-blur-md shadow-md border-b-transparent py-0' : 'bg-white border-b border-gray-200 py-1'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+        <div className={`flex justify-between transition-all duration-300 ${isScrolled ? 'h-14' : 'h-16'}`}>
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
               <span className="text-2xl font-bold text-primary-700">GramSetu</span>
@@ -54,11 +61,11 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                <button className="text-gray-500 hover:text-primary-600 p-2 rounded-full hover:bg-gray-100 transition-colors relative">
+                <button className="text-gray-500 hover:text-primary-600 p-2 rounded-full hover:bg-gray-100 transition-colors relative" title="Notifications">
                   <Bell size={20} />
                   <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                 </button>
-                <div className="relative group cursor-pointer">
+                <div className="relative group cursor-pointer" title="User Menu">
                   <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="h-8 w-8 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center font-bold">
                       {user.name.charAt(0)}
